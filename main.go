@@ -36,6 +36,7 @@ func main() {
 
 	bot.AddHandler(ready)
 	bot.AddHandler(messageCreate)
+	bot.AddHandler(onInteraction)
 
 	err = bot.Open()
 
@@ -44,7 +45,6 @@ func main() {
 		return
 	}
 
-	fmt.Println("momoko is alreadyyyyyy!!!")
 	<-make(chan struct{})
 }
 
@@ -62,74 +62,38 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		commands.TestCommand(s, m)
 
 	}
-
-	// if m.Content == Prefix+"ping" {
-	// 	_, _ = s.ChannelMessageSend(m.ChannelID, "pong")
-	// } else if m.Content == Prefix+"IT-q" {
-	// 	crawler, crawlerTime := itCrawler("https://ithelp.ithome.com.tw/questions")
-
-	// 	result := "```\n"
-	// 	count := 0
-	// 	for _, cw := range crawler {
-	// 		result = result[:] + cw + " on " + crawlerTime[count]
-	// 		result = result[:] + "\n"
-	// 		count++
-	// 	}
-	// 	result = result[:] + "```"
-	// 	fmt.Println(crawler)
-	// 	_, _ = s.ChannelMessageSend(m.ChannelID, result)
-	// } else if m.Content == Prefix+"IT-a" {
-	// 	crawler, crawlerTime := itCrawler("https://ithelp.ithome.com.tw/articles?tab=tech")
-
-	// 	result := "```\n"
-	// 	count := 0
-	// 	for _, cw := range crawler {
-	// 		result = result[:] + cw + " on " + crawlerTime[count]
-	// 		result = result[:] + "\n"
-	// 		count++
-	// 	}
-	// 	result = result[:] + "```"
-	// 	fmt.Println(crawler)
-	// 	_, _ = s.ChannelMessageSend(m.ChannelID, result)
-	// }
-
 }
 
 func ready(s *discordgo.Session, m *discordgo.Ready) {
+	fmt.Println("momoko is alreadyyyyyy!!!")
+
 	s.UpdateGameStatus(0, "偶像大師")
+
+	_, err := s.ApplicationCommandCreate(s.State.User.ID, "", &discordgo.ApplicationCommand{
+		Name:        "test",
+		Description: "測試",
+	})
+
+	if err != nil {
+		fmt.Printf("Error!! %s\n", err)
+	}
 }
 
-// func itCrawler(url string) ([]string, []string) {
-
-// 	countLink, countTime := 0, 0
-// 	var (
-// 		data     []string
-// 		dataTime []string
-// 	)
-
-// 	c := colly.NewCollector()
-
-// 	c.OnHTML(".qa-list__title-link", func(title *colly.HTMLElement) {
-// 		data = append(data, title.Text)
-// 		// fmt.Println(data)
-// 		countLink++
-// 	})
-
-// 	c.OnHTML(".qa-list__info-time", func(title *colly.HTMLElement) {
-// 		dataTime = append(dataTime, title.Text)
-// 		// fmt.Println(data)
-// 		countTime++
-// 	})
-
-// 	// c.OnResponse(func(r *colly.Response) {
-// 	// 	fmt.Println(string(r.Body))
-// 	// })
-
-// 	c.OnRequest(func(r *colly.Request) {
-// 		r.Headers.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36 Edg/108.0.1462.46")
-// 	})
-
-// 	c.Visit(url)
-
-// 	return data, dataTime
-// }
+func onInteraction(s *discordgo.Session, i *discordgo.InteractionCreate) {
+	if i.Type == discordgo.InteractionApplicationCommand {
+		cmdData, ok := i.Data.(discordgo.ApplicationCommandInteractionData)
+		if !ok {
+			fmt.Println("類型錯誤!")
+			return
+		}
+		switch cmdData.Name {
+		case "test":
+			s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+				Type: discordgo.InteractionResponseChannelMessageWithSource,
+				Data: &discordgo.InteractionResponseData{
+					Content: "test!",
+				},
+			})
+		}
+	}
+}
