@@ -5,6 +5,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/joho/godotenv"
 	"momoko-bot/bot/commands"
+	"momoko-bot/bot/handler"
 	"os"
 )
 
@@ -66,17 +67,8 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 func ready(s *discordgo.Session, m *discordgo.Ready) {
 	fmt.Println("momoko is alreadyyyyyy!!!")
-
 	s.UpdateGameStatus(0, "偶像大師")
-
-	_, err := s.ApplicationCommandCreate(s.State.User.ID, "", &discordgo.ApplicationCommand{
-		Name:        "test",
-		Description: "測試",
-	})
-
-	if err != nil {
-		fmt.Printf("Error!! %s\n", err)
-	}
+	handler.SlashCommand(s)
 }
 
 func onInteraction(s *discordgo.Session, i *discordgo.InteractionCreate) {
@@ -94,6 +86,14 @@ func onInteraction(s *discordgo.Session, i *discordgo.InteractionCreate) {
 					Content: "test!",
 				},
 			})
+		case "ping":
+			s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+				Type: discordgo.InteractionResponseChannelMessageWithSource,
+				Data: &discordgo.InteractionResponseData{
+					Content: "pong!",
+				},
+			})
+
 		}
 	}
 }
