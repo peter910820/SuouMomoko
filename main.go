@@ -42,6 +42,7 @@ func main() {
 	bot.AddHandler(ready) //註冊事件 建議換為指定事件
 	bot.AddHandler(messageCreate)
 	bot.AddHandler(onInteraction)
+	bot.AddHandler(voiceStateUpdate)
 
 	err = bot.Open()
 
@@ -73,6 +74,18 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	case "!test":
 		commands.TestCommand(s, m)
 
+	}
+}
+func voiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
+	user, err := s.User(vs.UserID)
+	if err != nil {
+		fmt.Printf("無法獲取用戶資訊: %v", err)
+		return
+	}
+	if vs.ChannelID == "" {
+		fmt.Printf("%s 離開了頻道\n", user.Username)
+	} else {
+		fmt.Printf("%s 加入了頻道 %s\n", user.Username, vs.ChannelID)
 	}
 }
 
