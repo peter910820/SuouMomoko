@@ -5,7 +5,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func SlashCommand(s *discordgo.Session) {
+func BasicCommand(s *discordgo.Session) {
 	commands := []*discordgo.ApplicationCommand{
 		{
 			Name:        "test",
@@ -14,6 +14,21 @@ func SlashCommand(s *discordgo.Session) {
 		{
 			Name:        "ping",
 			Description: "return bot heartbeatlatency",
+		},
+	}
+	for _, cmd := range commands {
+		_, err := s.ApplicationCommandCreate(s.State.User.ID, "", cmd)
+		if err != nil {
+			fmt.Println("[ERROR] ", err)
+		}
+	}
+}
+
+func TestingCommand(s *discordgo.Session) {
+	commands := []*discordgo.ApplicationCommand{
+		{
+			Name:        "voice_check",
+			Description: "checking all VoiceStateUpdate event",
 		},
 	}
 	for _, cmd := range commands {

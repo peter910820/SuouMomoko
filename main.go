@@ -10,11 +10,14 @@ import (
 )
 
 var (
-	botId string
-	bot   *discordgo.Session
+	botId      string
+	bot        *discordgo.Session
+	voiceState map[string]string
 )
 
 func main() {
+	voiceState = make(map[string]string)
+
 	err := godotenv.Load(".env")
 	token := os.Getenv("DISCORD_BOT_TOKEN")
 
@@ -42,6 +45,7 @@ func main() {
 	bot.AddHandler(ready) //註冊事件 建議換為指定事件
 	bot.AddHandler(messageCreate)
 	bot.AddHandler(onInteraction)
+	bot.AddHandler(onInteractionTesting)
 	bot.AddHandler(voiceStateUpdate)
 
 	err = bot.Open()
@@ -56,8 +60,9 @@ func main() {
 
 func ready(s *discordgo.Session, m *discordgo.Ready) {
 	fmt.Println("momoko is alreadyyyyyy!!!")
-	s.UpdateGameStatus(0, "偶像大師")
-	handler.SlashCommand(s)
+	s.UpdateGameStatus(0, "青夏軌跡")
+	handler.BasicCommand(s)
+	handler.TestingCommand(s)
 	handler.MusicCommnad(s)
 }
 
@@ -83,8 +88,10 @@ func voiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 		return
 	}
 	if vs.ChannelID == "" {
+		delete(voiceState, user.Username)
 		fmt.Printf("%s 離開了頻道\n", user.Username)
 	} else {
+		voiceState[user.Username] = vs.ChannelID
 		fmt.Printf("%s 加入了頻道 %s\n", user.Username, vs.ChannelID)
 	}
 }
@@ -93,7 +100,7 @@ func onInteraction(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	if i.Type == discordgo.InteractionApplicationCommand {
 		cmdData, ok := i.Data.(discordgo.ApplicationCommandInteractionData)
 		if !ok {
-			fmt.Println("類型錯誤!")
+			fmt.Println("Type ERROR!")
 			return
 		}
 		switch cmdData.Name {
@@ -113,21 +120,25 @@ func onInteraction(s *discordgo.Session, i *discordgo.InteractionCreate) {
 				},
 			})
 		case "join":
-			a := i.ChannelID
-			// member, err := s.State.Member(i.GuildID, i.Member.User.ID)
-			// if err != nil {
-			// 	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-			// 		Type: discordgo.InteractionResponseChannelMessageWithSource,
-			// 		Data: &discordgo.InteractionResponseData{
-			// 			Content: fmt.Sprintf("[ERROR] %s", err),
-			// 		},
-			// 	})
-			// 	return
-			// }
+			go commands.JoinRoom(s, i, &voiceState)
+
+		}
+	}
+}
+
+func onInteractionTesting(s *discordgo.Session, i *discordgo.InteractionCreate) {
+	if i.Type == discordgo.InteractionApplicationCommand {
+		cmdData, ok := i.Data.(discordgo.ApplicationCommandInteractionData)
+		if !ok {
+			fmt.Println("類型錯誤!")
+			return
+		}
+		switch cmdData.Name {
+		case "voice_check":
 			s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 				Type: discordgo.InteractionResponseChannelMessageWithSource,
 				Data: &discordgo.InteractionResponseData{
-					Content: a,
+					Content: fmt.Sprintf("**This is develop mode**\nAll VoiceStateUpdate event: %v", voiceState),
 				},
 			})
 		}
