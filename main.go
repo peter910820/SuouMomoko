@@ -2,11 +2,13 @@ package main
 
 import (
 	"fmt"
-	"github.com/bwmarrin/discordgo"
-	"github.com/joho/godotenv"
 	"momoko-bot/bot/commands"
 	"momoko-bot/bot/handler"
+	"momoko-bot/bot/test"
 	"os"
+
+	"github.com/bwmarrin/discordgo"
+	"github.com/joho/godotenv"
 )
 
 var (
@@ -54,6 +56,8 @@ func main() {
 		fmt.Println(err.Error())
 		return
 	}
+
+	go test.Yt()
 
 	<-make(chan struct{})
 }
