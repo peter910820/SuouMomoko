@@ -7,7 +7,7 @@ import (
 )
 
 func Yt() {
-	videoID := "url"
+	videoID := "https://music.youtube.com/watch?v=fWVhcojPqQI&list=PLM0jRdHj2C1nzyw0HWlFDXOf_F3QOFCf4"
 	client := youtube.Client{}
 
 	video, err := client.GetVideo(videoID)

@@ -2,6 +2,7 @@ package handler
 
 import (
 	"fmt"
+
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -52,6 +53,14 @@ func MusicCommnad(s *discordgo.Session) {
 		{
 			Name:        "play",
 			Description: "add bot into voice channle and play song or add song into playlist",
+			Options: []*discordgo.ApplicationCommandOption{
+				{
+					Type:        discordgo.ApplicationCommandOptionString,
+					Name:        "url",
+					Description: "enter your youtube url",
+					Required:    true,
+				},
+			},
 		},
 		{
 			Name:        "stop",

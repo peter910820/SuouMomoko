@@ -2,7 +2,9 @@ package commands
 
 import (
 	"fmt"
+
 	"github.com/bwmarrin/discordgo"
+	"github.com/kkdai/youtube/v2"
 )
 
 func JoinRoom(s *discordgo.Session, i *discordgo.InteractionCreate, voiceState *map[string]string) {
@@ -30,4 +32,13 @@ func JoinRoom(s *discordgo.Session, i *discordgo.InteractionCreate, voiceState *
 			},
 		})
 	}
+}
+
+func Play(s *discordgo.Session, i *discordgo.InteractionCreate, voiceState *map[string]string, url string) {
+	client := youtube.Client{}
+	video, err := client.GetVideo(url)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(video.Author)
 }

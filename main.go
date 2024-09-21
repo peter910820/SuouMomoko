@@ -6,6 +6,7 @@ import (
 	"momoko-bot/bot/handler"
 	"momoko-bot/bot/test"
 	"os"
+	"strings"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/joho/godotenv"
@@ -125,7 +126,18 @@ func onInteraction(s *discordgo.Session, i *discordgo.InteractionCreate) {
 			})
 		case "join":
 			go commands.JoinRoom(s, i, &voiceState)
-
+		case "play":
+			var url string
+			for _, option := range cmdData.Options {
+				if option.Name == "url" {
+					url = option.StringValue()
+					if !strings.HasPrefix(url, "https://www.youtube.com/") {
+						fmt.Println("字串不是以指定的開頭")
+					} else {
+						go commands.Play(s, i, &voiceState, url)
+					}
+				}
+			}
 		}
 	}
 }
