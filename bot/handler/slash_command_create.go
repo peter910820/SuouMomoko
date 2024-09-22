@@ -10,7 +10,11 @@ func BasicCommand(s *discordgo.Session) {
 	commands := []*discordgo.ApplicationCommand{
 		{
 			Name:        "test",
-			Description: "Test discord bot response",
+			Description: "test sometings",
+		},
+		{
+			Name:        "guild",
+			Description: "get guild id",
 		},
 		{
 			Name:        "ping",
@@ -43,14 +47,6 @@ func TestingCommand(s *discordgo.Session) {
 func MusicCommnad(s *discordgo.Session) {
 	commands := []*discordgo.ApplicationCommand{
 		{
-			Name:        "join",
-			Description: "add bot into voice channle",
-		},
-		{
-			Name:        "leave",
-			Description: "kick bot out to voice channle",
-		},
-		{
 			Name:        "play",
 			Description: "add bot into voice channle and play song or add song into playlist",
 			Options: []*discordgo.ApplicationCommandOption{
@@ -61,6 +57,10 @@ func MusicCommnad(s *discordgo.Session) {
 					Required:    true,
 				},
 			},
+		},
+		{
+			Name:        "leave",
+			Description: "kick bot out to voice channle",
 		},
 		{
 			Name:        "stop",

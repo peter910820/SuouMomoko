@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"momoko-bot/bot/commands"
 	"momoko-bot/bot/handler"
-	"momoko-bot/bot/test"
 	"os"
 	"strings"
 
@@ -57,8 +56,6 @@ func main() {
 		fmt.Println(err.Error())
 		return
 	}
-
-	go test.Yt()
 
 	<-make(chan struct{})
 }
@@ -113,7 +110,14 @@ func onInteraction(s *discordgo.Session, i *discordgo.InteractionCreate) {
 			s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 				Type: discordgo.InteractionResponseChannelMessageWithSource,
 				Data: &discordgo.InteractionResponseData{
-					Content: "test!",
+					Content: fmt.Sprintf("%v", s.VoiceConnections),
+				},
+			})
+		case "guild":
+			s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+				Type: discordgo.InteractionResponseChannelMessageWithSource,
+				Data: &discordgo.InteractionResponseData{
+					Content: "guildID: " + i.GuildID,
 				},
 			})
 		case "ping":
@@ -124,8 +128,6 @@ func onInteraction(s *discordgo.Session, i *discordgo.InteractionCreate) {
 					Content: fmt.Sprintf("現在延遲為: %v", delay),
 				},
 			})
-		case "join":
-			go commands.JoinRoom(s, i, &voiceState)
 		case "play":
 			var url string
 			for _, option := range cmdData.Options {
